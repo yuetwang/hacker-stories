@@ -114,11 +114,11 @@ const App = () => {
     // but 'call back' to the place it was introduced
     const handleSearchInput = event => {
         setSearchTerm(event.target.value);
-        event.preventDefault();
     };
 
-    const handleSearchSubmit = () => {
+    const handleSearchSubmit = event => {
         setUrl(`${API_ENDPOINT}${searchTerm}`);
+        event.preventDefault();
     }
     const sumComments = React.useMemo(() => getSumComments(stories), [
         stories
@@ -237,3 +237,4 @@ const Item = ({ item, onRemoveItem }) => {
 
 
 export default App;
+export { SearchForm, InputWithLabel, List, Item };
