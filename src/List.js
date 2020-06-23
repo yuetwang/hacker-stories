@@ -34,4 +34,4 @@ const Item = ({ item, onRemoveItem }) => {
     )
 };
 
-export default List
+export default List;

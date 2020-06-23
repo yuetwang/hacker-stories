@@ -33,4 +33,4 @@ const InputWithLabel = ({
     );
 };
 
-export default InputWithLabel
+export default InputWithLabel;
