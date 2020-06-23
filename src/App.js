@@ -1,7 +1,11 @@
 import React from 'react';
 import axios from 'axios';
+
+import SearchForm from './SearchForm';
+import List from './List';
+
 import './App.css';
-import { ReactComponent as Check } from './check.svg';
+
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -146,95 +150,5 @@ const App = () => {
     );
 }
 
-// other components
-const SearchForm = ({
-    searchTerm,
-    onSearchInput,
-    onSearchSubmit
-}) => (
-    <form onSubmit={onSearchSubmit} className="search-form">
-        <InputWithLabel
-            id="search"
-            value={searchTerm}
-            isFocused
-            onInputChange={onSearchInput} 
-        >
-            <strong>Search:</strong>
-        </InputWithLabel>
-
-        <button type="submit" disabled={!searchTerm} className="button button_large">
-            Submit
-        </button>
-    </form>
-);
-
-const InputWithLabel = ({
-    id,
-    value,
-    type = 'text',
-    onInputChange,
-    isFocused,
-    children
-}) => {
-    // Imperative React, used when need to imperatively modify a component or a DOM element
-    // For most case, should avoid by passing props instead
-    const inputRef = React.useRef();
-
-    React.useEffect(() => {
-        if (isFocused) {
-            inputRef.current.focus();
-        }
-    }, [isFocused]);
-
-    return (
-        <>
-            <label htmlFor={id} className="label">{children}</label>
-        &nbsp;
-        <input
-            ref={inputRef}
-            id={id}
-            type={type}
-            value={value}
-            onChange={onInputChange} 
-            className="input"/>
-        </>
-    );
-};
-
-const List = ({ list, onRemoveItem }) =>
-    
-    list.map(item => (
-        <Item
-            key={item.objectID}
-            item={item}
-            onRemoveItem={onRemoveItem}
-        />
-    )
-);
-
-const Item = ({ item, onRemoveItem }) => {
-    return (
-        <div className="item">
-            <span style={{width: '50%'}}>
-                <a href={item.url}>{item.title}</a>
-            </span>
-            <span style={{width: '20%'}}>{item.author}</span>
-            <span style={{width: '10%'}}>{item.num_comments}</span>
-            <span style={{width: '10%'}}>{item.points}</span>
-            <span style={{width: '10%'}}>
-                <button 
-                    type="button" 
-                    onClick={() => onRemoveItem(item)}
-                    className="button button_small"
-                >
-                    <Check height="18px" width="18px"/>
-        </button>
-            </span>
-        </div>
-    )
-};
-
-
 
 export default App;
-export { SearchForm, InputWithLabel, List, Item };
