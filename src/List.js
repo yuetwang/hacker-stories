@@ -11,13 +11,19 @@ const SORTS = {
 }
 
 const List = ({ list, onRemoveItem }) => {
-    const [sort, setSort] = React.useState('NONE');
+    const [sort, setSort] = React.useState({
+        sortKey: 'NONE',
+        isReverse: false
+    });
     const handleSort = sortKey => {
-        setSort(sortKey);
+        const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+        setSort({sortKey: sortKey, isReverse: isReverse});
     }
 
-    const sortFcn = SORTS[sort];
-    const sortedList = sortFcn(list);
+    const sortFcn = SORTS[sort.sortKey];
+
+    const sortedList = sort.isReverse ? 
+        sortFcn(list).reverse() : sortFcn(list);
     return (
         <div>
             <div style={{ display: 'flex' }}>
