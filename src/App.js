@@ -64,6 +64,12 @@ const getSumComments = stories => {
     );
 };
 
+const extractSearchTerm = url => url.replace(API_ENDPOINT, '');
+const getLastSearches = urls => urls.slice(-5).map(extractSearchTerm);
+const getUrl = (searchTerm) => {
+    return `${API_ENDPOINT}${searchTerm}`;
+}
+
 const App = () => {
 
     const [searchTerm, setSearchTerm] = useSemiPersistentState(
@@ -71,9 +77,24 @@ const App = () => {
         'React'
     );
 
-    const [url, setUrl] = React.useState(
-        `${API_ENDPOINT}${searchTerm}`
+    const handleSearchSubmit = event => {
+        handleSearch(searchTerm);
+        event.preventDefault();
+    };
+
+    const handleLastSearch = searchTerm => {
+        handleSearch(searchTerm);
+    };
+
+    const handleSearch = searchTerm => {
+        const url = getUrl(searchTerm);
+        setUrls(urls.concat(url));
+    }
+
+    const [urls, setUrls] = React.useState(
+        [getUrl(searchTerm)]
     );
+    const lastSearches = getLastSearches(urls);
 
     const [stories, dispatchStories] = React.useReducer(
         storiesReducer,
@@ -92,7 +113,8 @@ const App = () => {
         dispatchStories({type: 'STORIES_FETCH_INIT'});
         try {
             // use a third party library to as fetch might not work for old browsers or headless browser
-            const result = await axios.get(url);
+            const lastUrl = urls[urls.length - 1];
+            const result = await axios.get(lastUrl);
             dispatchStories({
                 type: 'STORIES_FETCH_SUCCESS',
                 payload: result.data.hits
@@ -100,7 +122,7 @@ const App = () => {
         } catch {
             dispatchStories({type: 'STORIES_FETCH_FAILURE'});
         }
-    }, [url]);
+    }, [urls]);
 
     React.useEffect(() => {
         handleFetchStories();
@@ -120,10 +142,6 @@ const App = () => {
         setSearchTerm(event.target.value);
     };
 
-    const handleSearchSubmit = event => {
-        setUrl(`${API_ENDPOINT}${searchTerm}`);
-        event.preventDefault();
-    }
     const sumComments = React.useMemo(() => getSumComments(stories), [
         stories
     ]);
@@ -136,6 +154,20 @@ const App = () => {
                 onSearchInput={handleSearchInput}
                 onSearchSubmit={handleSearchSubmit}
             />
+
+            {
+                lastSearches.map((searchTerm, index) => (
+                    <button
+                        key={searchTerm + index}
+                        type="button"
+                        class="button button_small"
+                        onClick={() => handleLastSearch(searchTerm)}
+                    >
+                        {searchTerm}
+                    </button>
+                ))
+            }
+            <hr />
 
             {stories.isError && <p>Something went wrong ...</p>}
             {stories.isLoading ? (
